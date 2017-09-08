@@ -1,6 +1,6 @@
-package com.mycompany.tlog16rs;
+package com.gytoth.tlog16rs;
 
-import com.mycompany.tlog16rs.resources.TLOG16RSResource;
+import com.gytoth.tlog16rs.resources.TLOG16RSResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
