@@ -6,5 +6,8 @@
       <word>task's</word>
       <word>tasks'</word>
     </spellchecker-wordlist>
+    <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+      <word>Wtzh</word>
+    </spellchecker-wordlist>
   </auxiliary>
 </gradle-project-properties>

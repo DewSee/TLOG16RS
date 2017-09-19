@@ -1,5 +1,6 @@
 package com.gytoth.tlog16rs.resources;
 
+import com.avaje.ebean.Ebean;
 import com.gytoth.tlog16rs.core.DeleteTaskRB;
 import com.gytoth.tlog16rs.core.EmptyTimeFieldException;
 import com.gytoth.tlog16rs.core.FinishingTaskRB;
@@ -12,14 +13,14 @@ import com.gytoth.tlog16rs.core.NotNewDateException;
 import com.gytoth.tlog16rs.core.NotNewMonthException;
 import com.gytoth.tlog16rs.core.NotSameMonthException;
 import com.gytoth.tlog16rs.core.NotSeparatedTimeException;
-import com.gytoth.tlog16rs.core.Task;
-import com.gytoth.tlog16rs.core.TaskRB;
-import com.gytoth.tlog16rs.core.TimeLogger;
 import com.gytoth.tlog16rs.core.WeekendNotEnabledException;
-import com.gytoth.tlog16rs.core.WorkDay;
+import com.gytoth.tlog16rs.entities.Task;
+import com.gytoth.tlog16rs.core.TaskRB;
+import com.gytoth.tlog16rs.entities.WorkDay;
 import com.gytoth.tlog16rs.core.WorkDayRB;
-import com.gytoth.tlog16rs.core.WorkMonth;
+import com.gytoth.tlog16rs.entities.WorkMonth;
 import com.gytoth.tlog16rs.core.WorkMonthRB;
+import com.gytoth.tlog16rs.entities.TimeLogger;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
@@ -35,33 +36,38 @@ import javax.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Path("/timelogger/workmonths")
+@Path("/timelogger")
 public class TLOG16RSResource {
 
-    private TimeLogger timeLogger = new TimeLogger();
+    private TimeLogger timeLogger = new TimeLogger("gytoth");
 
     @GET
+    @Path("/workmonths")
     @Produces(MediaType.APPLICATION_JSON)
     public List<WorkMonth> getMonths() {
         return timeLogger.getMonths();
     }
 
     @POST
+    @Path("/workmonths")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public WorkMonth addNewMonth(WorkMonthRB month) {
         WorkMonth workMonth = new WorkMonth(month.getYear(), month.getMonth());
         try {
+
             timeLogger.addMonth(workMonth);
+            Ebean.save(timeLogger);
         } catch (NotNewMonthException ex) {
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return workMonth;
 
     }
 
     @POST
-    @Path("/workdays")
+    @Path("/workmonths/workdays")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public WorkDay addNewWorkDay(WorkDayRB day) {
@@ -72,24 +78,28 @@ public class TLOG16RSResource {
             workDay = new WorkDay(day.getYear(), day.getMonth(), day.getDay());
             WorkMonth month = timeLogger.getMonths().stream().filter(f -> f.getDate().getYear() == day.getYear() && f.getDate().getMonthValue() == day.getMonth()).findFirst().get();
             month.addWorkDay(workDay);
+            Ebean.save(timeLogger);
 
         } catch (FutureWorkDayException | WeekendNotEnabledException | NotNewDateException | NotSameMonthException ex) {
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchElementException ex) {
 
             WorkMonth notExistingMonth = new WorkMonth(day.getYear(), day.getMonth());
             try {
                 timeLogger.addMonth(notExistingMonth);
                 notExistingMonth.addWorkDay(workDay);
+                Ebean.save(timeLogger);
             } catch (NotNewMonthException | WeekendNotEnabledException | NotNewDateException | NotSameMonthException ex1) {
-                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex1);
+                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
+
         return workDay;
+
     }
 
     @GET
-    @Path("/{year}/{month}")
+    @Path("/workmonths/{year}/{month}")
     @Produces(MediaType.APPLICATION_JSON)
     public WorkMonth getSpecificMonth(@PathParam(value = "year") int year, @PathParam(value = "month") int month) {
         WorkMonth selectedMonth = null;
@@ -98,13 +108,13 @@ public class TLOG16RSResource {
                     && f.getDate().getMonthValue() == month)
                     .findFirst().get();
         } catch (NoSuchElementException ex) {
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         }
         return selectedMonth;
     }
 
     @POST
-    @Path("/workdays/tasks/start")
+    @Path("/workmonths/workdays/tasks/start")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Task startNewTask(TaskRB task) {
@@ -116,7 +126,7 @@ public class TLOG16RSResource {
         try {
             workTask = new Task(task.getTaskId(), task.getStartTime(), task.getStartTime(), task.getComment());
         } catch (NotExpectedTimeOrderException | InvalidTaskIdException | NoTaskIdException | EmptyTimeFieldException ex) {
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
@@ -126,7 +136,7 @@ public class TLOG16RSResource {
             try {
                 timeLogger.addMonth(month);
             } catch (NotNewMonthException ex1) {
-                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex1);
+                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
 
@@ -137,20 +147,21 @@ public class TLOG16RSResource {
                 day = new WorkDay(task.getYear(), task.getMonth(), task.getDay());
                 month.addWorkDay(day);
             } catch (FutureWorkDayException | WeekendNotEnabledException | NotNewDateException | NotSameMonthException ex1) {
-                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex1);
+                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
 
         try {
             day.addTask(workTask);
         } catch (NotSeparatedTimeException ex) {
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         }
+        Ebean.save(timeLogger);
         return workTask;
     }
 
     @GET
-    @Path("/{year}/{month}/{day}")
+    @Path("/workmonths/{year}/{month}/{day}")
     @Produces(MediaType.APPLICATION_JSON)
     public WorkDay getSpecificWorkDay(@PathParam(value = "year") int year, @PathParam(value = "month") int month, @PathParam(value = "day") int day) {
         WorkDay selectedDay = null;
@@ -164,17 +175,16 @@ public class TLOG16RSResource {
                     findFirst().get();
 
         } catch (NoSuchElementException ex) {
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         }
         return selectedDay;
     }
 
     @PUT
-    @Path("/workdays/tasks/finish")
+    @Path("/workmonths/workdays/tasks/finish")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Task finishTask(FinishingTaskRB task
-    ) {
+    public Task finishTask(FinishingTaskRB task) {
 
         Task selectedTask = null;
         WorkMonth month = null;
@@ -187,7 +197,7 @@ public class TLOG16RSResource {
             try {
                 timeLogger.addMonth(month);
             } catch (NotNewMonthException ex1) {
-                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex1);
+                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
 
@@ -198,7 +208,7 @@ public class TLOG16RSResource {
                 day = new WorkDay(task.getYear(), task.getMonth(), task.getDay());
                 month.addWorkDay(day);
             } catch (FutureWorkDayException | WeekendNotEnabledException | NotNewDateException | NotSameMonthException ex1) {
-                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex1);
+                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
 
@@ -206,7 +216,7 @@ public class TLOG16RSResource {
             selectedTask = day.getTasks().stream().filter(f -> f.getTaskId().equals(task.getTaskId())).findFirst().get();
             selectedTask.setEndTime(task.getEndTime());
         } catch (NotExpectedTimeOrderException | EmptyTimeFieldException ex) {
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchElementException ex) {
             try {
                 selectedTask = new Task(task.getTaskId(), task.getStartTime(), task.getEndTime(), "");
@@ -215,12 +225,12 @@ public class TLOG16RSResource {
                 Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
-
+        Ebean.save(timeLogger);
         return selectedTask;
     }
 
     @PUT
-    @Path("/workdays/tasks/modify")
+    @Path("/workmonths/workdays/tasks/modify")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Task modifyTask(ModifyTaskRB task) {
@@ -235,9 +245,9 @@ public class TLOG16RSResource {
             try {
                 timeLogger.addMonth(month);
             } catch (NotNewMonthException ex1) {
-                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex1);
+                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex1);
             }
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
@@ -247,9 +257,9 @@ public class TLOG16RSResource {
                 day = new WorkDay(task.getYear(), task.getMonth(), task.getDay());
                 month.addWorkDay(day);
             } catch (FutureWorkDayException | WeekendNotEnabledException | NotNewDateException | NotSameMonthException ex1) {
-                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex1);
+                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex1);
             }
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
@@ -263,36 +273,48 @@ public class TLOG16RSResource {
                 selectedTask = new Task(task.getNewTaskId(), task.getNewStartTime(), task.getNewEndTime(), task.getNewComment());
                 day.addTask(selectedTask);
             } catch (NotExpectedTimeOrderException | InvalidTaskIdException | NoTaskIdException | EmptyTimeFieldException | NotSeparatedTimeException ex1) {
-                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex1);
+                Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex1);
             }
         } catch (InvalidTaskIdException | NoTaskIdException | NotExpectedTimeOrderException | EmptyTimeFieldException ex) {
-            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.CONFIG, null, ex);
+            Logger.getLogger(TLOG16RSResource.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        Ebean.save(timeLogger);
         return selectedTask;
     }
 
     @PUT
-    @Path("workdays/tasks/delete")
+    @Path("/workmonths/workdays/tasks/delete")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Task deleteTask(DeleteTaskRB task
-    ) {
+    public Task deleteTask(DeleteTaskRB task) {
         WorkMonth month = timeLogger.getMonths().stream().filter(f -> f.getDate().getYear() == task.getYear() && f.getDate().getMonthValue() == task.getMonth()).findFirst().get();
         WorkDay day = month.getWorkDays().stream().filter(f -> f.getActualDay().getYear() == task.getYear() && f.getActualDay().getMonthValue() == task.getMonth()).findFirst().get();
         Task selectedTask = day.getTasks().stream().filter(f -> f.getStartTime().toString().equals(task.getStartTime()) && f.getTaskId().equals(task.getTaskId())).findFirst().get();
 
         day.getTasks().remove(selectedTask);
+        Ebean.save(timeLogger);
         return selectedTask;
     }
 
     @PUT
-    @Path("/deleteall")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/workmonths/deleteall")
     @Produces(MediaType.APPLICATION_JSON)
     public List<WorkMonth> deleteAll() {
-        timeLogger.getMonths().removeAll(getMonths());
 
+        timeLogger.getMonths().clear();
+        Ebean.deleteAll(Ebean.find(WorkMonth.class).findList());
         return timeLogger.getMonths();
     }
+
+//    @POST
+//    @Path("/save/test")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.TEXT_PLAIN)
+//    public TestEntity createTestEntity(String text) {
+//        TestEntity testEntity = new TestEntity();
+//        testEntity.setText(text);
+//        Ebean.save(testEntity);
+//
+//        return testEntity;
+//    }
 }

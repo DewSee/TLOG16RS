@@ -1,5 +1,6 @@
 package com.gytoth.tlog16rs;
 
+import com.gytoth.tlog16rs.resources.TLOG16Database;
 import com.gytoth.tlog16rs.resources.TLOG16RSResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -23,8 +24,9 @@ public class TLOG16RSApplication extends Application<TLOG16RSConfiguration> {
 
     @Override
     public void run(final TLOG16RSConfiguration configuration,
-                    final Environment environment) {
+            final Environment environment) {
         environment.jersey().register(new TLOG16RSResource());
-    }
 
+        TLOG16Database.initDatabase(configuration);
+    }
 }
