@@ -18,9 +18,11 @@ import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.FileSystemResourceAccessor;
 
 public class TLOG16Database {
+
+    private TLOG16Database() {
+    }
 
     public static void initDatabase(TLOG16RSConfiguration configuration) {
         updateSchema(configuration);
@@ -61,7 +63,7 @@ public class TLOG16Database {
         Liquibase liquibase;
 
         try {
-            conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:9001/timelogger", "timelogger", "633Ym2aZ5b9Wtzh4EJc4pANx");
+            conn = DriverManager.getConnection(configuration.getUrl(), configuration.getUserName(), configuration.getPassword());
             liquibase = new Liquibase("migrations.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(conn));
             liquibase.update(new Contexts());
         } catch (LiquibaseException | SQLException ex) {

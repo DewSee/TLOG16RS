@@ -10,10 +10,13 @@ import com.gytoth.tlog16rs.entities.WorkMonth;
 
 public class Util {
 
-    public static int quarterHour = 15;
+    private Util() {
+    }
+
+    public static final int QUARTER_HOUR = 15;
 
     public static boolean isMultipleQuarterHour(Task task) {
-        return task.getMinPerTask() % quarterHour == 0;
+        return task.getMinPerTask() % QUARTER_HOUR == 0;
     }
 
     public static boolean isWeekday(WorkDay workDay) {
@@ -29,7 +32,7 @@ public class Util {
         if (!isMultipleQuarterHour(task)) {
             int halfQuarter = 7;
 
-            long remainder = task.getMinPerTask() % quarterHour;
+            long remainder = task.getMinPerTask() % QUARTER_HOUR;
             if (remainder <= halfQuarter) {
                 try {
                     task.setEndTime(task.getEndTime().minusMinutes(remainder));
@@ -38,7 +41,7 @@ public class Util {
                 }
             } else {
                 try {
-                    task.setEndTime(task.getEndTime().plusMinutes(quarterHour - remainder));
+                    task.setEndTime(task.getEndTime().plusMinutes(QUARTER_HOUR - remainder));
                 } catch (NotExpectedTimeOrderException | EmptyTimeFieldException ex) {
                     Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
                 }

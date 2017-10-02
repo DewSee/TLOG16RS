@@ -6,29 +6,11 @@
 ##
 ##############################################################################
 
-# Attempt to set APP_HOME
-# Resolve links: $0 may be a link
-PRG="$0"
-# Need this for relative symlinks.
-while [ -h "$PRG" ] ; do
-    ls=`ls -ld "$PRG"`
-    link=`expr "$ls" : '.*-> \(.*\)$'`
-    if expr "$link" : '/.*' > /dev/null; then
-        PRG="$link"
-    else
-        PRG=`dirname "$PRG"`"/$link"
-    fi
-done
-SAVED="`pwd`"
-cd "`dirname \"$PRG\"`/.." >/dev/null
-APP_HOME="`pwd -P`"
-cd "$SAVED" >/dev/null
+# Add default JVM options here. You can also use JAVA_OPTS and TLO_G16_RS_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS=""
 
 APP_NAME="TLOG16RS"
 APP_BASE_NAME=`basename "$0"`
-
-# Add default JVM options here. You can also use JAVA_OPTS and TLO_G16_RS_OPTS to pass JVM options to this script.
-DEFAULT_JVM_OPTS=""
 
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD="maximum"
@@ -48,7 +30,6 @@ die ( ) {
 cygwin=false
 msys=false
 darwin=false
-nonstop=false
 case "`uname`" in
   CYGWIN* )
     cygwin=true
@@ -59,12 +40,27 @@ case "`uname`" in
   MINGW* )
     msys=true
     ;;
-  NONSTOP* )
-    nonstop=true
-    ;;
 esac
 
-CLASSPATH=$APP_HOME/lib/TLOG16RS-0.1.0-SNAPSHOT.jar:$APP_HOME/lib/lombok-1.16.10.jar:$APP_HOME/lib/dropwizard-core-0.8.2.jar:$APP_HOME/lib/mariadb-java-client-2.1.1.jar:$APP_HOME/lib/avaje-ebeanorm-7.1.1.jar:$APP_HOME/lib/avaje-ebeanorm-agent-4.9.1.jar:$APP_HOME/lib/liquibase-core-3.3.5.jar:$APP_HOME/lib/dropwizard-util-0.8.2.jar:$APP_HOME/lib/dropwizard-jackson-0.8.2.jar:$APP_HOME/lib/dropwizard-validation-0.8.2.jar:$APP_HOME/lib/dropwizard-configuration-0.8.2.jar:$APP_HOME/lib/dropwizard-logging-0.8.2.jar:$APP_HOME/lib/dropwizard-metrics-0.8.2.jar:$APP_HOME/lib/dropwizard-jersey-0.8.2.jar:$APP_HOME/lib/dropwizard-servlets-0.8.2.jar:$APP_HOME/lib/dropwizard-jetty-0.8.2.jar:$APP_HOME/lib/dropwizard-lifecycle-0.8.2.jar:$APP_HOME/lib/metrics-core-3.1.1.jar:$APP_HOME/lib/metrics-jvm-3.1.1.jar:$APP_HOME/lib/metrics-servlets-3.1.1.jar:$APP_HOME/lib/metrics-healthchecks-3.1.1.jar:$APP_HOME/lib/argparse4j-0.4.4.jar:$APP_HOME/lib/jetty-setuid-java-1.0.2.jar:$APP_HOME/lib/annotations-13.0.jar:$APP_HOME/lib/persistence-api-1.0.jar:$APP_HOME/lib/jackson-core-2.6.5.jar:$APP_HOME/lib/jackson-annotations-2.5.0.jar:$APP_HOME/lib/guava-18.0.jar:$APP_HOME/lib/jsr305-3.0.0.jar:$APP_HOME/lib/joda-time-2.7.jar:$APP_HOME/lib/jackson-databind-2.5.1.jar:$APP_HOME/lib/jackson-datatype-jdk7-2.5.1.jar:$APP_HOME/lib/jackson-datatype-guava-2.5.1.jar:$APP_HOME/lib/jackson-module-afterburner-2.5.1.jar:$APP_HOME/lib/jackson-datatype-joda-2.5.1.jar:$APP_HOME/lib/logback-classic-1.1.2.jar:$APP_HOME/lib/hibernate-validator-5.1.3.Final.jar:$APP_HOME/lib/javax.el-3.0.0.jar:$APP_HOME/lib/jackson-dataformat-yaml-2.5.1.jar:$APP_HOME/lib/commons-lang3-3.3.2.jar:$APP_HOME/lib/metrics-logback-3.1.1.jar:$APP_HOME/lib/jul-to-slf4j-1.7.10.jar:$APP_HOME/lib/logback-core-1.1.2.jar:$APP_HOME/lib/log4j-over-slf4j-1.7.10.jar:$APP_HOME/lib/jcl-over-slf4j-1.7.10.jar:$APP_HOME/lib/jetty-util-9.2.9.v20150224.jar:$APP_HOME/lib/jersey-server-2.19.jar:$APP_HOME/lib/jersey-metainf-services-2.19.jar:$APP_HOME/lib/metrics-jersey2-3.1.1.jar:$APP_HOME/lib/jackson-jaxrs-json-provider-2.5.1.jar:$APP_HOME/lib/jersey-container-servlet-2.19.jar:$APP_HOME/lib/jetty-server-9.2.9.v20150224.jar:$APP_HOME/lib/jetty-webapp-9.2.9.v20150224.jar:$APP_HOME/lib/jetty-continuation-9.2.9.v20150224.jar:$APP_HOME/lib/metrics-annotation-3.1.1.jar:$APP_HOME/lib/metrics-jetty9-3.1.1.jar:$APP_HOME/lib/jetty-servlet-9.2.9.v20150224.jar:$APP_HOME/lib/jetty-servlets-9.2.9.v20150224.jar:$APP_HOME/lib/jetty-http-9.2.9.v20150224.jar:$APP_HOME/lib/metrics-json-3.1.1.jar:$APP_HOME/lib/validation-api-1.1.0.Final.jar:$APP_HOME/lib/jboss-logging-3.1.3.GA.jar:$APP_HOME/lib/classmate-1.0.0.jar:$APP_HOME/lib/snakeyaml-1.12.jar:$APP_HOME/lib/jersey-common-2.19.jar:$APP_HOME/lib/jersey-client-2.19.jar:$APP_HOME/lib/javax.ws.rs-api-2.0.1.jar:$APP_HOME/lib/jersey-media-jaxb-2.19.jar:$APP_HOME/lib/javax.annotation-api-1.2.jar:$APP_HOME/lib/hk2-api-2.4.0-b25.jar:$APP_HOME/lib/javax.inject-2.4.0-b25.jar:$APP_HOME/lib/hk2-locator-2.4.0-b25.jar:$APP_HOME/lib/jackson-jaxrs-base-2.5.1.jar:$APP_HOME/lib/jackson-module-jaxb-annotations-2.5.1.jar:$APP_HOME/lib/jersey-container-servlet-core-2.19.jar:$APP_HOME/lib/javax.servlet-api-3.1.0.jar:$APP_HOME/lib/jetty-io-9.2.9.v20150224.jar:$APP_HOME/lib/jetty-xml-9.2.9.v20150224.jar:$APP_HOME/lib/jetty-security-9.2.9.v20150224.jar:$APP_HOME/lib/jersey-guava-2.19.jar:$APP_HOME/lib/osgi-resource-locator-1.0.1.jar:$APP_HOME/lib/hk2-utils-2.4.0-b25.jar:$APP_HOME/lib/aopalliance-repackaged-2.4.0-b25.jar:$APP_HOME/lib/javassist-3.18.1-GA.jar:$APP_HOME/lib/javax.inject-1.jar:$APP_HOME/lib/slf4j-api-1.7.10.jar
+# Attempt to set APP_HOME
+# Resolve links: $0 may be a link
+PRG="$0"
+# Need this for relative symlinks.
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`"/$link"
+    fi
+done
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`/.." >/dev/null
+APP_HOME="`pwd -P`"
+cd "$SAVED" >/dev/null
+
+CLASSPATH=$APP_HOME/lib/TLOG16RS-0.1.0-SNAPSHOT.jar:$APP_HOME/lib/lombok-1.16.10.jar:$APP_HOME/lib/dropwizard-core-1.1.0.jar:$APP_HOME/lib/mariadb-java-client-2.1.1.jar:$APP_HOME/lib/avaje-ebeanorm-7.1.1.jar:$APP_HOME/lib/avaje-ebeanorm-agent-4.9.1.jar:$APP_HOME/lib/liquibase-core-3.3.5.jar:$APP_HOME/lib/dropwizard-util-1.1.0.jar:$APP_HOME/lib/dropwizard-jackson-1.1.0.jar:$APP_HOME/lib/dropwizard-validation-1.1.0.jar:$APP_HOME/lib/dropwizard-configuration-1.1.0.jar:$APP_HOME/lib/dropwizard-logging-1.1.0.jar:$APP_HOME/lib/dropwizard-metrics-1.1.0.jar:$APP_HOME/lib/dropwizard-jersey-1.1.0.jar:$APP_HOME/lib/dropwizard-servlets-1.1.0.jar:$APP_HOME/lib/dropwizard-jetty-1.1.0.jar:$APP_HOME/lib/dropwizard-lifecycle-1.1.0.jar:$APP_HOME/lib/metrics-core-3.2.2.jar:$APP_HOME/lib/metrics-jvm-3.2.2.jar:$APP_HOME/lib/metrics-servlets-3.2.2.jar:$APP_HOME/lib/metrics-healthchecks-3.2.2.jar:$APP_HOME/lib/dropwizard-request-logging-1.1.0.jar:$APP_HOME/lib/argparse4j-0.7.0.jar:$APP_HOME/lib/jetty-setuid-java-1.0.3.jar:$APP_HOME/lib/annotations-13.0.jar:$APP_HOME/lib/persistence-api-1.0.jar:$APP_HOME/lib/jackson-annotations-2.8.0.jar:$APP_HOME/lib/guava-21.0.jar:$APP_HOME/lib/jsr305-3.0.1.jar:$APP_HOME/lib/joda-time-2.9.7.jar:$APP_HOME/lib/jackson-databind-2.8.7.jar:$APP_HOME/lib/jackson-datatype-guava-2.8.7.jar:$APP_HOME/lib/jackson-datatype-jsr310-2.8.7.jar:$APP_HOME/lib/jackson-datatype-jdk8-2.8.7.jar:$APP_HOME/lib/jackson-module-parameter-names-2.8.7.jar:$APP_HOME/lib/jackson-module-afterburner-2.8.7.jar:$APP_HOME/lib/jackson-datatype-joda-2.8.7.jar:$APP_HOME/lib/logback-classic-1.2.1.jar:$APP_HOME/lib/hibernate-validator-5.3.4.Final.jar:$APP_HOME/lib/javax.el-3.0.0.jar:$APP_HOME/lib/jackson-dataformat-yaml-2.8.7.jar:$APP_HOME/lib/commons-lang3-3.5.jar:$APP_HOME/lib/metrics-logback-3.2.2.jar:$APP_HOME/lib/jul-to-slf4j-1.7.24.jar:$APP_HOME/lib/logback-core-1.2.1.jar:$APP_HOME/lib/log4j-over-slf4j-1.7.24.jar:$APP_HOME/lib/jcl-over-slf4j-1.7.24.jar:$APP_HOME/lib/jetty-util-9.4.2.v20170220.jar:$APP_HOME/lib/jersey-server-2.25.1.jar:$APP_HOME/lib/jersey-metainf-services-2.25.1.jar:$APP_HOME/lib/jersey-bean-validation-2.25.1.jar:$APP_HOME/lib/metrics-jersey2-3.2.2.jar:$APP_HOME/lib/jackson-jaxrs-json-provider-2.8.7.jar:$APP_HOME/lib/jersey-container-servlet-2.25.1.jar:$APP_HOME/lib/jetty-server-9.4.2.v20170220.jar:$APP_HOME/lib/jetty-webapp-9.4.2.v20170220.jar:$APP_HOME/lib/jetty-continuation-9.4.2.v20170220.jar:$APP_HOME/lib/metrics-annotation-3.2.2.jar:$APP_HOME/lib/metrics-jetty9-3.2.2.jar:$APP_HOME/lib/jetty-servlet-9.4.2.v20170220.jar:$APP_HOME/lib/jetty-servlets-9.4.2.v20170220.jar:$APP_HOME/lib/jetty-http-9.4.2.v20170220.jar:$APP_HOME/lib/metrics-json-3.2.2.jar:$APP_HOME/lib/profiler-1.0.2.jar:$APP_HOME/lib/logback-access-1.2.1.jar:$APP_HOME/lib/validation-api-1.1.0.Final.jar:$APP_HOME/lib/jboss-logging-3.3.0.Final.jar:$APP_HOME/lib/classmate-1.3.1.jar:$APP_HOME/lib/snakeyaml-1.17.jar:$APP_HOME/lib/jersey-common-2.25.1.jar:$APP_HOME/lib/jersey-client-2.25.1.jar:$APP_HOME/lib/javax.ws.rs-api-2.0.1.jar:$APP_HOME/lib/jersey-media-jaxb-2.25.1.jar:$APP_HOME/lib/javax.annotation-api-1.2.jar:$APP_HOME/lib/hk2-api-2.5.0-b32.jar:$APP_HOME/lib/javax.inject-2.5.0-b32.jar:$APP_HOME/lib/hk2-locator-2.5.0-b32.jar:$APP_HOME/lib/javax.el-api-2.2.4.jar:$APP_HOME/lib/javax.el-2.2.4.jar:$APP_HOME/lib/jackson-jaxrs-base-2.8.7.jar:$APP_HOME/lib/jackson-module-jaxb-annotations-2.8.7.jar:$APP_HOME/lib/jersey-container-servlet-core-2.25.1.jar:$APP_HOME/lib/javax.servlet-api-3.1.0.jar:$APP_HOME/lib/jetty-io-9.4.2.v20170220.jar:$APP_HOME/lib/jetty-xml-9.4.2.v20170220.jar:$APP_HOME/lib/jetty-security-9.4.2.v20170220.jar:$APP_HOME/lib/jersey-guava-2.25.1.jar:$APP_HOME/lib/osgi-resource-locator-1.0.1.jar:$APP_HOME/lib/hk2-utils-2.5.0-b32.jar:$APP_HOME/lib/aopalliance-repackaged-2.5.0-b32.jar:$APP_HOME/lib/javassist-3.20.0-GA.jar:$APP_HOME/lib/javax.inject-1.jar:$APP_HOME/lib/jackson-core-2.8.7.jar:$APP_HOME/lib/slf4j-api-1.7.24.jar
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
@@ -89,7 +85,7 @@ location of your Java installation."
 fi
 
 # Increase the maximum file descriptors if we can.
-if [ "$cygwin" = "false" -a "$darwin" = "false" -a "$nonstop" = "false" ] ; then
+if [ "$cygwin" = "false" -a "$darwin" = "false" ] ; then
     MAX_FD_LIMIT=`ulimit -H -n`
     if [ $? -eq 0 ] ; then
         if [ "$MAX_FD" = "maximum" -o "$MAX_FD" = "max" ] ; then

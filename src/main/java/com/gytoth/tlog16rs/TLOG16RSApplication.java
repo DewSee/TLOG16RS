@@ -10,6 +10,7 @@ public class TLOG16RSApplication extends Application<TLOG16RSConfiguration> {
 
     public static void main(final String[] args) throws Exception {
         new TLOG16RSApplication().run(args);
+
     }
 
     @Override

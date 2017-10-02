@@ -5,9 +5,7 @@ import com.gytoth.tlog16rs.core.NegativeMinutesOfWorkException;
 import com.gytoth.tlog16rs.core.NotSeparatedTimeException;
 import com.gytoth.tlog16rs.core.Util;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import static javax.persistence.CascadeType.ALL;
 import javax.persistence.Entity;
@@ -17,7 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
@@ -66,10 +63,11 @@ public class WorkDay {
         }
     }
 
-//    public WorkDay() {
-//        this.requiredMinPerDay = DEFAULT_MIN_PER_DAY;
-//        this.actualDay = DEFAULT_ACTUAL_DAY;
-//    }
+    public WorkDay() {
+        this.requiredMinPerDay = DEFAULT_MIN_PER_DAY;
+        this.actualDay = DEFAULT_ACTUAL_DAY;
+    }
+
     public long getSumPerDay() {
         return tasks.stream().mapToLong(o -> o.getMinPerTask()).sum();
     }
@@ -99,12 +97,6 @@ public class WorkDay {
         if (!Util.isSeparatedTime(task, tasks)) {
             throw new NotSeparatedTimeException("Tasks' times are overlapping!");
         }
-    }
-
-    protected LocalTime getLastEndTime() {
-        Task latest = tasks.stream().max(Comparator.comparing(Task::getEndTime)).get();
-
-        return latest.getEndTime();
     }
 
     @Override

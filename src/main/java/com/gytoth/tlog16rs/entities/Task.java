@@ -184,11 +184,11 @@ public class Task {
     }
 
     private boolean isValidRedmineId() {
-        return ((taskId.matches("[0-9]+") && taskId.length() == 4));
+        return (taskId.matches("[0-9]+") && taskId.length() == 4);
     }
 
     private boolean isValidLtId() {
-        return ((taskId.startsWith("LT-") && taskId.substring(3).matches("[0-9]+")));
+        return (taskId.startsWith("LT-") && taskId.substring(3).matches("[0-9]+"));
     }
 
     @Override
