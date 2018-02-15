@@ -2,7 +2,9 @@ package com.gytoth.tlog16rs.entities;
 
 import com.gytoth.tlog16rs.core.FutureWorkDayException;
 import com.gytoth.tlog16rs.core.NegativeMinutesOfWorkException;
+import com.gytoth.tlog16rs.core.NotNewMonthException;
 import com.gytoth.tlog16rs.core.NotSeparatedTimeException;
+import com.gytoth.tlog16rs.core.NotNewTaskException;
 import com.gytoth.tlog16rs.core.Util;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -86,17 +88,24 @@ public class WorkDay {
         }
     }
 
-    protected long getExtraMinPerDay() {
+    public long getExtraMinPerDay() {
         return getSumPerDay() - requiredMinPerDay;
     }
 
-    public void addTask(Task task) throws NotSeparatedTimeException {
-        if (Util.isMultipleQuarterHour(task) && Util.isSeparatedTime(task, tasks)) {
+    public void addTask(Task task) throws NotSeparatedTimeException, NotNewTaskException {
+        if (Util.isMultipleQuarterHour(task) && Util.isSeparatedTime(task, tasks) && isNewTask(task)) {
             tasks.add(task);
+        }
+        if (!isNewTask(task)) {
+            throw new NotNewTaskException("Task already exists!");
         }
         if (!Util.isSeparatedTime(task, tasks)) {
             throw new NotSeparatedTimeException("Tasks' times are overlapping!");
         }
+    }
+
+    private boolean isNewTask(Task task) {
+        return getTasks().stream().noneMatch(t -> t.getTaskId().equals(task.getTaskId()));
     }
 
     @Override
