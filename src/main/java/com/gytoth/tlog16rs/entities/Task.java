@@ -4,7 +4,6 @@ import com.gytoth.tlog16rs.core.EmptyTimeFieldException;
 import com.gytoth.tlog16rs.core.InvalidTaskIdException;
 import com.gytoth.tlog16rs.core.NoTaskIdException;
 import com.gytoth.tlog16rs.core.NotExpectedTimeOrderException;
-import com.gytoth.tlog16rs.core.Util;
 import java.time.Duration;
 import java.time.LocalTime;
 import javax.persistence.Entity;
@@ -22,178 +21,189 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Task {
 
-    @Id
-    @GeneratedValue
-    int id;
+	@Id
+	@GeneratedValue
+	int id;
 
-    String taskId;
-    LocalTime startTime;
-    LocalTime endTime;
-    int minPerTask;
-    String comment;
+	String taskId;
+	LocalTime startTime;
+	LocalTime endTime;
+	int minPerTask;
+	String comment;
 
-    public Task(String taskid, int startHour, int startMin, int endHour, int endMin, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException {
-        this.taskId = taskid;
-        this.startTime = LocalTime.of(startHour, startMin);
-        this.endTime = LocalTime.of(endHour, endMin);
-        this.comment = comment;
-        Util.roundToMultipleQuarterHour(this);
-        if (this.startTime == null && this.endTime == null) {
-            throw new EmptyTimeFieldException("Time fields are empty!");
-        }
-        if (this.endTime.isBefore(this.startTime)) {
-            throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
-        }
-        if (this.taskId == null) {
-            throw new NoTaskIdException("No Task Id!");
-        }
-        if (!this.isValidTaskId()) {
-            throw new InvalidTaskIdException("Invalid Task ID!");
-        }
+	public Task(String taskid, int startHour, int startMin, int endHour, int endMin, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException {
+		this.taskId = taskid;
+		this.startTime = LocalTime.of(startHour, setToNearestQuarterHour(startMin));
+		this.endTime = LocalTime.of(endHour, setToNearestQuarterHour(endMin));
+		this.comment = comment;
+		if (this.startTime == null && this.endTime == null) {
+			throw new EmptyTimeFieldException("Time fields are empty!");
+		}
+		if (this.endTime.isBefore(this.startTime)) {
+			throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
+		}
+		if (this.taskId == null) {
+			throw new NoTaskIdException("No Task Id!");
+		}
+		if (!this.isValidTaskId()) {
+			throw new InvalidTaskIdException("Invalid Task ID!");
+		}
 
-    }
+	}
 
-    public Task(String taskId) throws NoTaskIdException, InvalidTaskIdException, EmptyTimeFieldException {
-        this.taskId = taskId;
+	public Task(String taskId) throws NoTaskIdException, InvalidTaskIdException, EmptyTimeFieldException {
+		this.taskId = taskId;
 
-        if (this.startTime == null && this.endTime == null) {
-            throw new EmptyTimeFieldException("Time fields are empty!");
-        }
-        if (this.taskId == null) {
-            throw new NoTaskIdException("No Task Id!");
-        }
-        if (!this.isValidTaskId()) {
-            throw new InvalidTaskIdException("Invalid Task ID!");
-        }
-    }
+		if (this.startTime == null && this.endTime == null) {
+			throw new EmptyTimeFieldException("Time fields are empty!");
+		}
+		if (this.taskId == null) {
+			throw new NoTaskIdException("No Task Id!");
+		}
+		if (!this.isValidTaskId()) {
+			throw new InvalidTaskIdException("Invalid Task ID!");
+		}
+	}
 
-    /**
-     * startTime and endTime are made from strings split at the colon (HH:MM)
-     *
-     * @throws NotExpectedTimeOrderException
-     * @throws InvalidTaskIdException
-     * @throws NoTaskIdException
-     * @throws EmptyTimeFieldException
-     */
-    public Task(String taskId, String startTime, String endTime, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException {
-        String[] splitStartTime = startTime.split(":");
-        String[] splitEndTime = endTime.split(":");
-        this.taskId = taskId;
-        this.startTime = LocalTime.of(Integer.parseInt(splitStartTime[0]), Integer.parseInt(splitStartTime[1]));
-        this.endTime = LocalTime.of(Integer.parseInt(splitEndTime[0]), Integer.parseInt(splitEndTime[1]));
-        this.comment = comment;
-        Util.roundToMultipleQuarterHour(this);
+	/**
+	 * startTime and endTime are made from strings split at the colon (HH:MM)
+	 *
+	 * @throws NotExpectedTimeOrderException
+	 * @throws InvalidTaskIdException
+	 * @throws NoTaskIdException
+	 * @throws EmptyTimeFieldException
+	 */
+	public Task(String taskId, String startTime, String endTime, String comment) throws NotExpectedTimeOrderException, InvalidTaskIdException, NoTaskIdException, EmptyTimeFieldException {
+		String[] splitStartTime = startTime.split(":");
+		String[] splitEndTime = endTime.split(":");
+		this.taskId = taskId;
+		this.startTime = LocalTime.of(Integer.parseInt(splitStartTime[0]), setToNearestQuarterHour(Integer.parseInt(splitStartTime[1])));
+		this.endTime = LocalTime.of(Integer.parseInt(splitEndTime[0]), setToNearestQuarterHour(Integer.parseInt(splitEndTime[1])));
+		this.comment = comment;
 
-        if (this.startTime == null && this.endTime == null) {
-            throw new EmptyTimeFieldException("Time fields are empty!");
-        }
-        if (this.endTime.isBefore(this.startTime)) {
-            throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
-        }
-        if (this.taskId == null) {
-            throw new NoTaskIdException("No Task Id!");
+		if (this.startTime == null && this.endTime == null) {
+			throw new EmptyTimeFieldException("Time fields are empty!");
+		}
+		if (this.endTime.isBefore(this.startTime)) {
+			throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
+		}
+		if (this.taskId == null) {
+			throw new NoTaskIdException("No Task Id!");
 
-        }
-        if (!this.isValidTaskId()) {
-            throw new InvalidTaskIdException("Invalid Task ID!");
-        }
-    }
+		}
+		if (!this.isValidTaskId()) {
+			throw new InvalidTaskIdException("Invalid Task ID!");
+		}
+	}
 
-    public void setTaskId(String taskId) throws InvalidTaskIdException, NoTaskIdException {
-        this.taskId = taskId;
+	public void setTaskId(String taskId) throws InvalidTaskIdException, NoTaskIdException {
+		this.taskId = taskId;
 
-        if (this.taskId == null) {
-            throw new NoTaskIdException("No Task Id!");
+		if (this.taskId == null) {
+			throw new NoTaskIdException("No Task Id!");
 
-        }
-        if (!this.isValidTaskId()) {
-            throw new InvalidTaskIdException("Invalid Task ID!");
-        }
+		}
+		if (!this.isValidTaskId()) {
+			throw new InvalidTaskIdException("Invalid Task ID!");
+		}
 
-    }
+	}
 
-    public void setStartTime(int startHour, int startMin) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
-        this.startTime = LocalTime.of(startHour, startMin);
-        if (this.startTime == null && this.endTime == null) {
-            throw new EmptyTimeFieldException("Time fields are empty!");
-        }
-        if (this.endTime.isBefore(this.startTime)) {
-            throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
-        }
-    }
+	public void setStartTime(int startHour, int startMin) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
+		this.startTime = LocalTime.of(startHour, startMin);
+		if (this.startTime == null && this.endTime == null) {
+			throw new EmptyTimeFieldException("Time fields are empty!");
+		}
+		if (this.endTime.isBefore(this.startTime)) {
+			throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
+		}
+	}
 
-    public void setStartTime(LocalTime startTime) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
-        this.startTime = startTime;
-        if (this.startTime == null && this.endTime == null) {
-            throw new EmptyTimeFieldException("Time fields are empty!");
-        }
-        if (this.endTime.isBefore(this.startTime)) {
-            throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
-        }
-    }
+	public void setStartTime(LocalTime startTime) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
+		this.startTime = startTime;
+		if (this.startTime == null && this.endTime == null) {
+			throw new EmptyTimeFieldException("Time fields are empty!");
+		}
+		if (this.endTime.isBefore(this.startTime)) {
+			throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
+		}
+	}
 
-    public void setEndTime(int endHour, int endMin) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
-        this.endTime = LocalTime.of(endHour, endMin);
-        if (this.startTime == null && this.endTime == null) {
-            throw new EmptyTimeFieldException("Time fields are empty!");
-        }
-        if (this.endTime.isBefore(this.startTime)) {
-            throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
-        }
+	public void setEndTime(int endHour, int endMin) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
+		this.endTime = LocalTime.of(endHour, endMin);
+		if (this.startTime == null && this.endTime == null) {
+			throw new EmptyTimeFieldException("Time fields are empty!");
+		}
+		if (this.endTime.isBefore(this.startTime)) {
+			throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
+		}
 
-    }
+	}
 
-    public void setEndTime(LocalTime endTime) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
-        this.endTime = endTime;
-        if (this.startTime == null && this.endTime == null) {
-            throw new EmptyTimeFieldException("Time fields are empty!");
-        }
-        if (this.endTime.isBefore(this.startTime)) {
-            throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
-        }
-    }
+	public void setEndTime(LocalTime endTime) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
+		this.endTime = endTime;
+		if (this.startTime == null && this.endTime == null) {
+			throw new EmptyTimeFieldException("Time fields are empty!");
+		}
+		if (this.endTime.isBefore(this.startTime)) {
+			throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
+		}
+	}
 
-    public void setStartTime(String startTime) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
-        String[] splitStartTime = startTime.split(":");
-        this.startTime = LocalTime.of(Integer.parseInt(splitStartTime[0]), Integer.parseInt(splitStartTime[1]));
-        if (this.startTime == null && this.endTime == null) {
-            throw new EmptyTimeFieldException("Time fields are empty!");
-        }
-        if (this.endTime.isBefore(this.startTime)) {
-            throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
-        }
-    }
+	public void setStartTime(String startTime) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
+		String[] splitStartTime = startTime.split(":");
+		this.startTime = LocalTime.of(Integer.parseInt(splitStartTime[0]), Integer.parseInt(splitStartTime[1]));
+		if (this.startTime == null && this.endTime == null) {
+			throw new EmptyTimeFieldException("Time fields are empty!");
+		}
+		if (this.endTime.isBefore(this.startTime)) {
+			throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
+		}
+	}
 
-    public void setEndTime(String endTime) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
-        String[] splitEndTime = endTime.split(":");
-        this.endTime = LocalTime.of(Integer.parseInt(splitEndTime[0]), Integer.parseInt(splitEndTime[1]));
-        if (this.startTime == null && this.endTime == null) {
-            throw new EmptyTimeFieldException("Time fields are empty!");
-        }
-        if (this.endTime.isBefore(this.startTime)) {
-            throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
-        }
-    }
+	public void setEndTime(String endTime) throws NotExpectedTimeOrderException, EmptyTimeFieldException {
+		String[] splitEndTime = endTime.split(":");
+		this.endTime = LocalTime.of(Integer.parseInt(splitEndTime[0]), Integer.parseInt(splitEndTime[1]));
+		if (this.startTime == null && this.endTime == null) {
+			throw new EmptyTimeFieldException("Time fields are empty!");
+		}
+		if (this.endTime.isBefore(this.startTime)) {
+			throw new NotExpectedTimeOrderException("End Time must be after Start Time!");
+		}
+	}
 
-    public long getMinPerTask() {
-        return (Duration.between(startTime, endTime).getSeconds()) / 60;
-    }
+	private int setToNearestQuarterHour(int minutes) {
+		int quarter = 15;
+		int roundedMinute = 0;
+		int remainder = minutes % quarter;
+		if (remainder < 8) {
+			roundedMinute = minutes - remainder;
+		} else {
+			roundedMinute = minutes + (quarter - remainder);
+		}
 
-    protected boolean isValidTaskId() {
-        return (isValidLtId() || isValidRedmineId());
-    }
+		return roundedMinute;
+	}
 
-    private boolean isValidRedmineId() {
-        return (taskId.matches("[0-9]+") && taskId.length() == 4);
-    }
+	public long getMinPerTask() {
+		return (Duration.between(startTime, endTime).getSeconds()) / 60;
+	}
 
-    private boolean isValidLtId() {
-        return (taskId.startsWith("LT-") && taskId.substring(3).matches("[0-9]+"));
-    }
+	protected boolean isValidTaskId() {
+		return (isValidLtId() || isValidRedmineId());
+	}
 
-    @Override
-    public String toString() {
-        return "taskId=" + taskId + ", startTime=" + startTime + ", endTime=" + endTime + ", comment=" + comment;
-    }
+	private boolean isValidRedmineId() {
+		return (taskId.matches("[0-9]+") && taskId.length() == 4);
+	}
+
+	private boolean isValidLtId() {
+		return (taskId.startsWith("LT-") && taskId.substring(3).matches("[0-9]+"));
+	}
+
+	@Override
+	public String toString() {
+		return "taskId=" + taskId + ", startTime=" + startTime + ", endTime=" + endTime + ", comment=" + comment;
+	}
 
 }

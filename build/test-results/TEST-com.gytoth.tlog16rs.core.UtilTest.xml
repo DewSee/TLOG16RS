@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.gytoth.tlog16rs.core.UtilTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2018-03-07T14:51:48" hostname="DESKTOP-8L94VJS" time="0.01">
+  <properties/>
+  <testcase name="testSelectTask" classname="com.gytoth.tlog16rs.core.UtilTest" time="0.001"/>
+  <testcase name="testIsWeekday" classname="com.gytoth.tlog16rs.core.UtilTest" time="0.0"/>
+  <testcase name="testSelectMonth" classname="com.gytoth.tlog16rs.core.UtilTest" time="0.0"/>
+  <testcase name="testSelectDay" classname="com.gytoth.tlog16rs.core.UtilTest" time="0.0"/>
+  <testcase name="testIsMultipleQuarterHour" classname="com.gytoth.tlog16rs.core.UtilTest" time="0.0"/>
+  <testcase name="testIsSeparatedTime" classname="com.gytoth.tlog16rs.core.UtilTest" time="0.0"/>
+  <testcase name="testRoundToMultipleQuarterHour" classname="com.gytoth.tlog16rs.core.UtilTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

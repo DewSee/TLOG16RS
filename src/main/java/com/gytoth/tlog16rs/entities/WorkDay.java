@@ -23,94 +23,94 @@ import lombok.Data;
 @Table(name = "work_day")
 public class WorkDay {
 
-    @Id
-    @GeneratedValue
-    int id;
+	@Id
+	@GeneratedValue
+	int id;
 
-    @OneToMany(cascade = ALL, fetch = LAZY)
-    private List<Task> tasks = new ArrayList<>();
+	@OneToMany(cascade = ALL, fetch = LAZY)
+	private List<Task> tasks = new ArrayList<>();
 
-    long requiredMinPerDay;
-    long extraMinPerDay;
-    long sumPerDay;
-    LocalDate actualDay;
+	long requiredMinPerDay;
+	long extraMinPerDay;
+	long sumPerDay;
+	LocalDate actualDay;
 
-    private static final long DEFAULT_MIN_PER_DAY = 450;
-    private static final LocalDate DEFAULT_ACTUAL_DAY = LocalDate.now();
+	private static final long DEFAULT_MIN_PER_DAY = 450;
+	private static final LocalDate DEFAULT_ACTUAL_DAY = LocalDate.now();
 
-    public WorkDay(long requiredMinPerDay, int year, int month, int day) throws NegativeMinutesOfWorkException, FutureWorkDayException {
-        this.requiredMinPerDay = requiredMinPerDay;
-        this.actualDay = LocalDate.of(year, month, day);
-        if (this.requiredMinPerDay < 0) {
-            throw new NegativeMinutesOfWorkException("Amount of working time can't be negative!");
-        }
-        if (this.actualDay.isAfter(LocalDate.now())) {
-            throw new FutureWorkDayException("Workday can't be created in the future");
-        }
-    }
+	public WorkDay(long requiredMinPerDay, int year, int month, int day) throws NegativeMinutesOfWorkException, FutureWorkDayException {
+		this.requiredMinPerDay = requiredMinPerDay;
+		this.actualDay = LocalDate.of(year, month, day);
+		if (this.requiredMinPerDay < 0) {
+			throw new NegativeMinutesOfWorkException("Amount of working time can't be negative!");
+		}
+		if (this.actualDay.isAfter(LocalDate.now())) {
+			throw new FutureWorkDayException("Workday can't be created in the future");
+		}
+	}
 
-    public WorkDay(long requiredMinPerDay) throws NegativeMinutesOfWorkException {
-        this.requiredMinPerDay = requiredMinPerDay;
-        this.actualDay = DEFAULT_ACTUAL_DAY;
-        if (this.requiredMinPerDay < 0) {
-            throw new NegativeMinutesOfWorkException("Amount of working time can't be negative!");
-        }
-    }
+	public WorkDay(long requiredMinPerDay) throws NegativeMinutesOfWorkException {
+		this.requiredMinPerDay = requiredMinPerDay;
+		this.actualDay = DEFAULT_ACTUAL_DAY;
+		if (this.requiredMinPerDay < 0) {
+			throw new NegativeMinutesOfWorkException("Amount of working time can't be negative!");
+		}
+	}
 
-    public WorkDay(int year, int month, int day) throws FutureWorkDayException {
-        this.requiredMinPerDay = DEFAULT_MIN_PER_DAY;
-        this.actualDay = LocalDate.of(year, month, day);
-        if (this.actualDay.isAfter(LocalDate.now())) {
-            throw new FutureWorkDayException("Workday can't be created in the future");
-        }
-    }
+	public WorkDay(int year, int month, int day) throws FutureWorkDayException {
+		this.requiredMinPerDay = DEFAULT_MIN_PER_DAY;
+		this.actualDay = LocalDate.of(year, month, day);
+		if (this.actualDay.isAfter(LocalDate.now())) {
+			throw new FutureWorkDayException("Workday can't be created in the future");
+		}
+	}
 
-    public WorkDay() {
-        this.requiredMinPerDay = DEFAULT_MIN_PER_DAY;
-        this.actualDay = DEFAULT_ACTUAL_DAY;
-    }
+	public WorkDay() {
+		this.requiredMinPerDay = DEFAULT_MIN_PER_DAY;
+		this.actualDay = DEFAULT_ACTUAL_DAY;
+	}
 
-    public long getSumPerDay() {
-        return tasks.stream().mapToLong(o -> o.getMinPerTask()).sum();
-    }
+	public long getSumPerDay() {
+		return tasks.stream().mapToLong(o -> o.getMinPerTask()).sum();
+	}
 
-    public void setRequiredMinPerDay(long requiredMinPerDay) throws NegativeMinutesOfWorkException {
-        this.requiredMinPerDay = requiredMinPerDay;
-        if (requiredMinPerDay < 0) {
-            throw new NegativeMinutesOfWorkException("Amount of working time can't be negative!");
-        }
-    }
+	public void setRequiredMinPerDay(long requiredMinPerDay) throws NegativeMinutesOfWorkException {
+		this.requiredMinPerDay = requiredMinPerDay;
+		if (requiredMinPerDay < 0) {
+			throw new NegativeMinutesOfWorkException("Amount of working time can't be negative!");
+		}
+	}
 
-    public void setActualDay(int year, int month, int day) throws FutureWorkDayException {
-        this.actualDay = LocalDate.of(year, month, day);
-        if (this.actualDay.isAfter(LocalDate.now())) {
-            throw new FutureWorkDayException("Amount of working time can't be negative!");
-        }
-    }
+	public void setActualDay(int year, int month, int day) throws FutureWorkDayException {
+		this.actualDay = LocalDate.of(year, month, day);
+		if (this.actualDay.isAfter(LocalDate.now())) {
+			throw new FutureWorkDayException("Amount of working time can't be negative!");
+		}
+	}
 
-    public long getExtraMinPerDay() {
-        return getSumPerDay() - requiredMinPerDay;
-    }
+	public long getExtraMinPerDay() {
+		return getSumPerDay() - requiredMinPerDay;
+	}
 
-    public void addTask(Task task) throws NotSeparatedTimeException, NotNewTaskException {
-        if (Util.isMultipleQuarterHour(task) && Util.isSeparatedTime(task, tasks) && isNewTask(task)) {
-            tasks.add(task);
-        }
-        if (!isNewTask(task)) {
-            throw new NotNewTaskException("Task already exists!");
-        }
-        if (!Util.isSeparatedTime(task, tasks)) {
-            throw new NotSeparatedTimeException("Tasks' times are overlapping!");
-        }
-    }
+	public void addTask(Task task) throws NotSeparatedTimeException, NotNewTaskException {
+		if (Util.isSeparatedTime(task, tasks) && isNewTask(task)) {
+			tasks.add(task);
+		}
+		if (!isNewTask(task)) {
+			throw new NotNewTaskException("Task already exists!");
+		}
+		if (!Util.isSeparatedTime(task, tasks)) {
+			throw new NotSeparatedTimeException("Tasks' times are overlapping!");
+		}
+	}
 
-    private boolean isNewTask(Task task) {
-        return getTasks().stream().noneMatch(t -> t.getTaskId().equals(task.getTaskId()));
-    }
+	private boolean isNewTask(Task task) {
+		return getTasks().stream().noneMatch(t -> t.getTaskId().equals(task.getTaskId()));
+	}
 
-    @Override
-    public String toString() {
-        return "requiredMinPerDay: " + requiredMinPerDay + ", actualDay: " + actualDay + ", sumPerDay: " + sumPerDay;
-    }
+	@Override
+	public String toString() {
+		return "requiredMinPerDay: " + requiredMinPerDay + ", actualDay: " + actualDay + ", sumPerDay: " + sumPerDay;
+	}
 
 }

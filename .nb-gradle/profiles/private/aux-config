@@ -5,12 +5,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
       <group>
-        <file>file:/home/gyula/work/Java_Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/entities/WorkDay.java</file>
-        <file>file:/home/gyula/work/Java_Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/entities/Task.java</file>
-        <file>file:/home/gyula/work/Java_Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/resources/TLOG16RSResource.java</file>
-        <file>file:/home/gyula/work/Java_Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/entities/TimeLogger.java</file>
+        <file>file:/C:/work/Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/TLOG16RSApplication.java</file>
+        <file>file:/C:/work/Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/resources/TLOG16Database.java</file>
+        <file>file:/C:/work/Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/entities/WorkDay.java</file>
+        <file>file:/C:/work/Learning/TLOG16RS/src/test/java/com/gytoth/tlog16rs/core/UtilTest.java</file>
+        <file>file:/C:/work/Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/core/Util.java</file>
+        <file>file:/C:/work/Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/entities/Task.java</file>
+        <file>file:/C:/work/Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/resources/TLOG16RSResource.java</file>
       </group>
     </open-files>
     <editor-bookmarks lastBookmarkId="0" xmlns="http://www.netbeans.org/ns/editor-bookmarks/2"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+      <group>
+        <file>file:/C:/work/Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/entities/Task.java</file>
+        <file>file:/C:/work/Learning/TLOG16RS/src/main/java/com/gytoth/tlog16rs/resources/TLOG16RSResource.java</file>
+      </group>
+    </open-files>
   </auxiliary>
 </gradle-project-properties>
